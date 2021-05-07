@@ -9,6 +9,16 @@ source(here("scripts/convenience_functions.R"))
 
 
 
+### rules for synchronizing photo names and plot data
+
+# photoname and plotid: change “fm10-” and “fm19-” to “fma” and “fmb”
+# photoname: if ends in “ E” etc, change to “-E”
+# photoname: change “frenchmeadows” to “fm”
+# 
+# 
+# springs plotdata: drop 2019 postfire
+# bm plotdta: drop (2019) postfire
+
 
 
 
