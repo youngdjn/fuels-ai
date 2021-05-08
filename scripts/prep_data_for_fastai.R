@@ -162,13 +162,15 @@ fueltransect_photo_dat = fuel_photo_dat %>%
   mutate(photo_name = paste(plot_id_std,cardinaldir,sep="_")) %>%
   select(plot_id_std,cardinaldir,photo_name,new_filename,ct1hr:litter) %>%
   mutate(natester = rowSums(across(ct1hr:litter))) %>%
-  filter(!is.na(natester))
+  filter(!is.na(natester)) %>%
+  filter(grepl("N.jpg|S.jpg|E.jpg|W.jpg",new_filename))
 
 plotdata_photo_dat = fuel_photo_dat %>%
   mutate(photo_name = paste(plot_id_std,cardinaldir,sep="_")) %>%
   select(plot_id_std,cardinaldir,photo_name,new_filename,TOS_percent:n_trees) %>%
   mutate(natester = rowSums(across(TOS_percent:n_trees))) %>%
-  filter(!is.na(natester))
+  filter(!is.na(natester)) %>%
+  filter(grepl("N.jpg|S.jpg|E.jpg|W.jpg",new_filename))
 
 ## make a photo-plot crosswalk
 xwalk = photos_matching %>%
