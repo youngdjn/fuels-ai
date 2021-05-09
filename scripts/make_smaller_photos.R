@@ -9,8 +9,8 @@ source(here("scripts/convenience_functions.R"))
 
 imgs = list.files(datadir("grupenhoff_photos_renamed"),full.names = TRUE)
 
-size = 512
-dir = "photos_center_512/"
+size = 256
+dir = "photos_lowcenter_256/"
 if(!dir.exists(datadir(dir))) dir.create(datadir(dir))
 
 for(i in 1:length(imgs)) {
@@ -38,11 +38,11 @@ for(i in 1:length(imgs)) {
   left_offset = (width-height)/2
   crop_string = paste0(height,"x",height,"+",left_offset)   
   
-  # # to make a ground photo
-  # top_offset = height/2
-  # height = height/2
-  # left_offset = (width-height)/2
-  # crop_string = paste0(height,"x",height,"+",left_offset,"+",top_offset)
+  # to make a ground photo
+  top_offset = height/2
+  height = height/2
+  left_offset = (width-height)/2
+  crop_string = paste0(height,"x",height,"+",left_offset,"+",top_offset)
 
   } else {
     
@@ -52,11 +52,11 @@ for(i in 1:length(imgs)) {
     top_offset = (height-width)/2
     crop_string = paste0(width,"x",width,"+0+",top_offset)   
 
-    # # to make a ground photo
-    # top_offset = height/2
-    # height = height/2
-    # left_offset = (width-height)/2
-    # crop_string = paste0(height,"x",height,"+",left_offset,"+",top_offset)
+    # to make a ground photo
+    top_offset = height/2
+    height = height/2
+    left_offset = (width-height)/2
+    crop_string = paste0(height,"x",height,"+",left_offset,"+",top_offset)
     
   }
     
