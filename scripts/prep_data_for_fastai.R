@@ -13,6 +13,9 @@ pd = read_csv(datadir("grupenhoff_plot_data_orig/HolyGrail_Description.csv"))
 
 #standardize plot ID
 plots = pd %>%
+  select(year,site,plot_id,pre_post_fire,TOT_VEG_percent,TOS_percent,TOS_HT_m,LITTER,CWD,ROCK,BARESOIL) %>%
+  ## remove duplicated
+  unique() %>%
   mutate(plot_id_std = str_to_upper(plot_id)) %>%
   mutate(plot_id_std = str_replace(plot_id_std,fixed("FM10-"),replacement = "FMA")) %>%
   mutate(plot_id_std = str_replace(plot_id_std,fixed("FM19-"),replacement = "FMB")) %>%
@@ -103,7 +106,7 @@ f = f %>%
 #### for each plot get: shrub cover, CWD cover, litter cover, bare soil
 
 plots_dat = plots_w_photos %>%
-  select(plot_id,plot_id_std, year, pre_post_fire, TOS_percent, TOS_HT_m, BARESOIL, LITTER, CWD) %>%
+  select(plot_id,plot_id_std, year, pre_post_fire, TOS_percent, TOS_HT_m, BARESOIL, LITTER, ROCK, CWD) %>%
   mutate(plot_number = str_extract(plot_id,"[0-9]+$")) %>%
   mutate(plot_name = str_remove(plot_id,fixed(plot_number))) %>%
   mutate(plot_number = as.numeric(plot_number)) %>%
@@ -158,23 +161,37 @@ fuel_photo_dat = fuel_photo_dat %>%
   mutate(across(TOS_percent:litter, as.numeric)) %>%
   mutate(across(TOS_percent:litter, normalize))
   
+
+### Define plots as training or valid (so all photos from a plot are in train or valid)
+plotnames = fuel_photo_dat$plot_id_std %>% unique()
+plot_valid = data.frame(plot_id_std = plotnames, seq=1:length(plotnames)) %>%
+  mutate(is_valid = seq %% 3 == 0) %>%
+  select(-seq)
+
+
+
 fueltransect_photo_dat = fuel_photo_dat %>%
   mutate(photo_name = paste(plot_id_std,cardinaldir,sep="_")) %>%
   select(plot_id_std,cardinaldir,photo_name,new_filename,ct1hr:litter) %>%
   mutate(natester = rowSums(across(ct1hr:litter))) %>%
   filter(!is.na(natester)) %>%
-  filter(grepl("N.jpg|S.jpg|E.jpg|W.jpg",new_filename))
+  filter(grepl("N.jpg|S.jpg|E.jpg|W.jpg",new_filename)) %>%
+  unique() %>%
+  left_join(plot_valid)
 
 plotdata_photo_dat = fuel_photo_dat %>%
   mutate(photo_name = paste(plot_id_std,cardinaldir,sep="_")) %>%
   select(plot_id_std,cardinaldir,photo_name,new_filename,TOS_percent:n_trees) %>%
   mutate(natester = rowSums(across(TOS_percent:n_trees))) %>%
   filter(!is.na(natester)) %>%
-  filter(grepl("N.jpg|S.jpg|E.jpg|W.jpg",new_filename))
+  filter(grepl("N.jpg|S.jpg|E.jpg|W.jpg",new_filename)) %>%
+  unique() %>%
+  left_join(plot_valid)
 
 ## make a photo-plot crosswalk
 xwalk = photos_matching %>%
-  select(new_filename,plot_id_std,cardinaldir,year = year.x, pre_post_fire, plot_id)
+  select(new_filename,plot_id_std,cardinaldir,year = year.x, pre_post_fire, plot_id) %>%
+  left_join(plot_valid)
 
 write_csv(xwalk,datadir("data_prepped/photo_plot_xwalk.csv"))
 write_csv(fueltransect_photo_dat,datadir("data_prepped/fueltransect_photo_dat.csv"))
