@@ -49,6 +49,9 @@ d_fuel = read_csv(datadir("data_prepped/fueltransect_photo_dat.csv"))
 fueldat = left_join(a_fuel,d_fuel)
 
 
+write_csv(plotdat,datadir("data_w_preds/plotdata.csv"))
+write_csv(fueldat,datadir("data_w_preds/fueldata.csv"))
+
 
 # > names(d)
 # [1] "id"                   "plot_id_std"          "pred_cwd_center"      "pred_cwd_lowcenter"   "pred_litter_center"  
@@ -67,9 +70,9 @@ fueldat = left_join(a_fuel,d_fuel)
 
 # shrub cover
 
-plot_fit(title = "CWD cover (plot mean, low)",
-         xvar = "CWD",
-         yvar = "pred_cwd_lowcenter",
+plot_fit(title = "Number of trees (plot mean)",
+         xvar = "n_trees",
+         yvar = "pred_ntrees_center",
          plot_mean = TRUE)
 
 
